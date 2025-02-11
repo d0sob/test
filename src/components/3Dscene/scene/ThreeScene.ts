@@ -3,7 +3,9 @@ import * as THREE from "three";
 import { Skybox } from "./Skybox";
 import { Controls } from "./Controls";
 import { Box } from "../Meshes/Box";
+import { Player } from "../Meshes/Player";
 
+const clock = new THREE.Clock();
 export class ThreeScene {
   private static instance: ThreeScene;
   private scene!: THREE.Scene;
@@ -12,6 +14,7 @@ export class ThreeScene {
   private controls!: Controls;
   private animationFrameId: number | null = null;
   private box!: Box;
+  private player!: Player;
 
   // Make the constructor private to prevent external instantiation
   private constructor(private container: HTMLDivElement) {}
@@ -44,7 +47,7 @@ export class ThreeScene {
       0.1,
       1000
     );
-    this.camera.position.set(0, 10, 30);
+    this.camera.position.set(0, 1, 2);
 
     // Set up the renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -59,6 +62,14 @@ export class ThreeScene {
 
     // Instantiate the box mesh
     this.box = new Box(this.scene);
+    this.player = new Player(this.scene);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "1") {
+        this.player.switchAnimation("Idle");
+      } else if (event.key === "2") {
+        this.player.switchAnimation("Run");
+      }
+    });
 
     // Initialize the controls
     this.controls = new Controls(this.camera, this.renderer.domElement);
@@ -75,8 +86,10 @@ export class ThreeScene {
    */
   private animate = (): void => {
     this.animationFrameId = requestAnimationFrame(this.animate);
+    const deltaTime = clock.getDelta();
     this.controls.update();
     this.box.update();
+    this.player.update(deltaTime);
     this.renderer.render(this.scene, this.camera);
   };
 
