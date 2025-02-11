@@ -1,5 +1,5 @@
 // src/components/Controls.ts
-import { OrbitControls as OriginalOrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls as OriginalOrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as THREE from "three";
 
 export class Controls extends OriginalOrbitControls {

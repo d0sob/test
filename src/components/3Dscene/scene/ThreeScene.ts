@@ -24,6 +24,7 @@ export class ThreeScene {
    * If it doesn't exist, it will be created and initialized.
    * @param container The HTMLDivElement to render the scene in.
    */
+
   public static getInstance(container: HTMLDivElement): ThreeScene {
     if (!ThreeScene.instance) {
       ThreeScene.instance = new ThreeScene(container);
@@ -32,15 +33,8 @@ export class ThreeScene {
     return ThreeScene.instance;
   }
 
-  /**
-   * Initialize the scene, camera, renderer, controls, and objects.
-   * This method is called once upon the first instantiation.
-   */
   private init(): void {
-    // Set up the scene
     this.scene = new THREE.Scene();
-
-    // Set up the camera
     this.camera = new THREE.PerspectiveCamera(
       75,
       this.container.clientWidth / this.container.clientHeight,
@@ -49,7 +43,6 @@ export class ThreeScene {
     );
     this.camera.position.set(0, 1, 2);
 
-    // Set up the renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(
       this.container.clientWidth,
@@ -63,6 +56,7 @@ export class ThreeScene {
     // Instantiate the box mesh
     this.box = new Box(this.scene);
     this.player = new Player(this.scene);
+
     window.addEventListener("keydown", (event) => {
       if (event.key === "1") {
         this.player.switchAnimation("Idle");
@@ -77,13 +71,9 @@ export class ThreeScene {
     // Listen to window resize events
     window.addEventListener("resize", this.onResize);
 
-    // Start the animation loop
     this.animate();
   }
 
-  /**
-   * The main animation loop.
-   */
   private animate = (): void => {
     this.animationFrameId = requestAnimationFrame(this.animate);
     const deltaTime = clock.getDelta();
@@ -93,9 +83,6 @@ export class ThreeScene {
     this.renderer.render(this.scene, this.camera);
   };
 
-  /**
-   * Handle window resize events.
-   */
   private onResize = (): void => {
     const { clientWidth, clientHeight } = this.container;
     this.camera.aspect = clientWidth / clientHeight;
@@ -103,16 +90,13 @@ export class ThreeScene {
     this.renderer.setSize(clientWidth, clientHeight);
   };
 
-  /**
-   * Dispose of the scene and clean up resources.
-   */
   public dispose(): void {
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
     }
     window.removeEventListener("resize", this.onResize);
-    this.controls.dispose();
     this.renderer.dispose();
+    this.controls.dispose();
 
     // Remove the renderer's DOM element from the container
     if (this.container.contains(this.renderer.domElement)) {
