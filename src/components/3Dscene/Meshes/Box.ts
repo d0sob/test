@@ -25,7 +25,8 @@ export class Box {
     this.physicsBody = physicsWorld.createRigidBody(rigidBodyDesc);
 
     // Create a collider for the box
-    const colliderDesc = Rapier.ColliderDesc.cuboid(1, 1, 1);
+    const colSize = 0.5;
+    const colliderDesc = Rapier.ColliderDesc.cuboid(colSize, colSize, colSize);
     physicsWorld.createCollider(colliderDesc, this.physicsBody);
   }
 
