@@ -1,10 +1,14 @@
 import * as THREE from "three";
+import * as Rapier from "@dimforge/rapier3d";
 
 export class Plane {
   private mesh: THREE.Mesh;
   private size: number;
+  private physicsBody: Rapier.RigidBody;
+  private collider: Rapier.Collider;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
+    // Create the visual mesh
     const geometry = new THREE.PlaneGeometry();
     const material = new THREE.MeshBasicMaterial({
       color: 0xffff00,
@@ -15,5 +19,18 @@ export class Plane {
     this.size = 10;
     this.mesh.scale.set(this.size, this.size, this.size);
     scene.add(this.mesh);
+
+    const rigidBodyDesc = Rapier.RigidBodyDesc.fixed().setTranslation(0, 0, 0);
+    this.physicsBody = physicsWorld.createRigidBody(rigidBodyDesc);
+
+    const halfWidth = this.size * 0.5;
+    const halfDepth = this.size * 0.5;
+    const halfThickness = 0.1; // a small thickness
+    const colliderDesc = Rapier.ColliderDesc.cuboid(
+      halfWidth,
+      halfThickness,
+      halfDepth
+    );
+    this.collider = physicsWorld.createCollider(colliderDesc, this.physicsBody);
   }
 }

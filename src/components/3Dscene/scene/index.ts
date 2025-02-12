@@ -1,3 +1,4 @@
+// src/components/3Dscene/scene/index.ts
 import * as THREE from "three";
 import { initScene } from "./initScene";
 import { animate } from "./animate";
@@ -6,6 +7,7 @@ import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
 import { FirstPersonControls } from "./Controls";
+import * as Rapier from "@dimforge/rapier3d";
 
 export class ThreeScene {
   private static instance: ThreeScene;
@@ -15,6 +17,8 @@ export class ThreeScene {
   public animationFrameId: number | null = null;
 
   // Add properties
+  public physicsWorld!: Rapier.World;
+  public eventQueue!: Rapier.EventQueue;
   public box!: Box;
   public player!: Player;
   public plane!: Plane;

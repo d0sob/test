@@ -1,3 +1,4 @@
+// src/components/3Dscene/scene/animate.ts
 import * as THREE from "three";
 import { ThreeScene } from "./index";
 
@@ -8,10 +9,18 @@ export function animate(sceneInstance: ThreeScene): void {
     animate(sceneInstance)
   );
   const deltaTime = clock.getDelta();
-  sceneInstance.box.update();
+
+  if (sceneInstance.physicsWorld) {
+    sceneInstance.physicsWorld.step();
+  }
+  if (sceneInstance.box) {
+    sceneInstance.box.update();
+  }
   sceneInstance.player.update(deltaTime);
+
   if (sceneInstance.controls) {
     sceneInstance.controls.update(deltaTime);
   }
+
   sceneInstance.renderer.render(sceneInstance.scene, sceneInstance.camera);
 }

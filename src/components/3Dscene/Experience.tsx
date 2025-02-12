@@ -1,4 +1,4 @@
-// src/components/ThreeJSScene.tsx
+// src/components/Experience.tsx
 import React, { useEffect, useRef } from "react";
 import { ThreeScene } from "./scene/index";
 

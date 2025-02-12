@@ -1,3 +1,4 @@
+// src/components/3Dscene/scene/initScene.ts
 import * as THREE from "three";
 import { Skybox } from "./Skybox";
 import { Box } from "../Meshes/Box";
@@ -5,6 +6,8 @@ import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
 import { FirstPersonControls } from "./Controls";
 import { ThreeScene } from "./index";
+import { setupPhysics } from "./setupPhysics";
+import * as Rapier from "@dimforge/rapier3d";
 
 export function initScene(sceneInstance: ThreeScene): void {
   const { container } = sceneInstance;
@@ -27,7 +30,17 @@ export function initScene(sceneInstance: ThreeScene): void {
     sceneInstance.camera,
     sceneInstance.renderer.domElement
   );
-  sceneInstance.box = new Box(sceneInstance.scene);
-  sceneInstance.plane = new Plane(sceneInstance.scene);
+
+  // Initialize the physics world first
+  const { physicsWorld } = setupPhysics();
+
+  sceneInstance.eventQueue = new Rapier.EventQueue(true);
+  // Create the Box object with both the scene and physics world passed in
+  sceneInstance.box = new Box(sceneInstance.scene, physicsWorld);
+  sceneInstance.physicsWorld = physicsWorld;
+  sceneInstance.plane = new Plane(
+    sceneInstance.scene,
+    sceneInstance.physicsWorld
+  );
   sceneInstance.player = new Player(sceneInstance.scene);
 }
