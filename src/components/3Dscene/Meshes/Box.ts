@@ -4,7 +4,6 @@ import * as Rapier from "@dimforge/rapier3d";
 export class Box {
   private mesh: THREE.Mesh;
   private physicsBody: Rapier.RigidBody;
-  private collider: Rapier.Collider;
 
   constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
     // Create a Three.js box mesh
@@ -27,7 +26,7 @@ export class Box {
 
     // Create a collider for the box
     const colliderDesc = Rapier.ColliderDesc.cuboid(1, 1, 1);
-    this.collider = physicsWorld.createCollider(colliderDesc, this.physicsBody);
+    physicsWorld.createCollider(colliderDesc, this.physicsBody);
   }
 
   public update(): void {

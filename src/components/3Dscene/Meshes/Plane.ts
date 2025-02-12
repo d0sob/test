@@ -5,7 +5,6 @@ export class Plane {
   private mesh: THREE.Mesh;
   private size: number;
   private physicsBody: Rapier.RigidBody;
-  private collider: Rapier.Collider;
 
   constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
     // Create the visual mesh
@@ -31,6 +30,6 @@ export class Plane {
       halfThickness,
       halfDepth
     );
-    this.collider = physicsWorld.createCollider(colliderDesc, this.physicsBody);
+    physicsWorld.createCollider(colliderDesc, this.physicsBody);
   }
 }
