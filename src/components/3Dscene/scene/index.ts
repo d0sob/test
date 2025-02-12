@@ -5,6 +5,7 @@ import { setupEventListeners } from "./eventListeners";
 import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
+import { FirstPersonControls } from "./Controls";
 
 export class ThreeScene {
   private static instance: ThreeScene;
@@ -17,6 +18,7 @@ export class ThreeScene {
   public box!: Box;
   public player!: Player;
   public plane!: Plane;
+  public controls!: FirstPersonControls;
 
   private constructor(public container: HTMLDivElement) {}
 

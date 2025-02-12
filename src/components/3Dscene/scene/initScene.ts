@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Skybox } from "./Skybox";
-import { Box } from ".././Meshes/Box";
+import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
 import { FirstPersonControls } from "./Controls";
@@ -22,11 +22,11 @@ export function initScene(sceneInstance: ThreeScene): void {
   container.appendChild(sceneInstance.renderer.domElement);
 
   new Skybox(sceneInstance.scene);
-  new FirstPersonControls(
+
+  sceneInstance.controls = new FirstPersonControls(
     sceneInstance.camera,
     sceneInstance.renderer.domElement
   );
-
   sceneInstance.box = new Box(sceneInstance.scene);
   sceneInstance.plane = new Plane(sceneInstance.scene);
   sceneInstance.player = new Player(sceneInstance.scene);

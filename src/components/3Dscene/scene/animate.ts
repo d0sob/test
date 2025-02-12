@@ -10,5 +10,8 @@ export function animate(sceneInstance: ThreeScene): void {
   const deltaTime = clock.getDelta();
   sceneInstance.box.update();
   sceneInstance.player.update(deltaTime);
+  if (sceneInstance.controls) {
+    sceneInstance.controls.update(deltaTime);
+  }
   sceneInstance.renderer.render(sceneInstance.scene, sceneInstance.camera);
 }
