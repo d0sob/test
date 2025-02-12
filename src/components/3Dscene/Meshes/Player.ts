@@ -45,4 +45,17 @@ export class Player {
       action.play();
     }
   }
+
+  getPosition(): THREE.Vector3 {
+    if (!this.model) {
+      return new THREE.Vector3();
+    }
+    return this.model.position;
+  }
+
+  move(direction: THREE.Vector3) {
+    if (this.model) {
+      this.model.position.add(direction);
+    }
+  }
 }

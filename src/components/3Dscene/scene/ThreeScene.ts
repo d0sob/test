@@ -1,9 +1,10 @@
 // src/components/ThreeScene.ts
 import * as THREE from "three";
 import { Skybox } from "./Skybox";
-import { Controls } from "./Controls";
+import { FirstPersonControls } from "./Controls";
 import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
+import { Plane } from "../Meshes/Plane";
 
 const clock = new THREE.Clock();
 export class ThreeScene {
@@ -11,10 +12,10 @@ export class ThreeScene {
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
-  private controls!: Controls;
   private animationFrameId: number | null = null;
   private box!: Box;
   private player!: Player;
+  private plane!: Plane;
 
   // Make the constructor private to prevent external instantiation
   private constructor(private container: HTMLDivElement) {}
@@ -55,6 +56,7 @@ export class ThreeScene {
 
     // Instantiate the box mesh
     this.box = new Box(this.scene);
+    this.plane = new Plane(this.scene);
     this.player = new Player(this.scene);
 
     window.addEventListener("keydown", (event) => {
@@ -66,7 +68,7 @@ export class ThreeScene {
     });
 
     // Initialize the controls
-    this.controls = new Controls(this.camera, this.renderer.domElement);
+    new FirstPersonControls(this.camera, this.renderer.domElement);
 
     // Listen to window resize events
     window.addEventListener("resize", this.onResize);
@@ -77,7 +79,6 @@ export class ThreeScene {
   private animate = (): void => {
     this.animationFrameId = requestAnimationFrame(this.animate);
     const deltaTime = clock.getDelta();
-    this.controls.update();
     this.box.update();
     this.player.update(deltaTime);
     this.renderer.render(this.scene, this.camera);
@@ -96,7 +97,6 @@ export class ThreeScene {
     }
     window.removeEventListener("resize", this.onResize);
     this.renderer.dispose();
-    this.controls.dispose();
 
     // Remove the renderer's DOM element from the container
     if (this.container.contains(this.renderer.domElement)) {
