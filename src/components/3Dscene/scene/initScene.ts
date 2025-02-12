@@ -3,6 +3,7 @@ import { Skybox } from "./Skybox";
 import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
+import { Capsule } from "../Meshes/capsule";
 import { FirstPersonControls } from "./Controls";
 import { ThreeScene } from "./index";
 import { setupPhysics } from "./setupPhysics";
@@ -25,6 +26,12 @@ export async function initScene(sceneInstance: ThreeScene) {
 
   new Skybox(sceneInstance.scene);
 
+  const ambientLight = new THREE.AmbientLight(0x404040, 1); // color, intensity
+  sceneInstance.scene.add(ambientLight);
+  const light = new THREE.PointLight(0xff0000, 10, 100);
+  light.position.set(50, 50, 50);
+  sceneInstance.scene.add(light);
+
   sceneInstance.controls = new FirstPersonControls(
     sceneInstance.camera,
     sceneInstance.renderer.domElement
@@ -43,4 +50,5 @@ export async function initScene(sceneInstance: ThreeScene) {
     sceneInstance.physicsWorld
   );
   sceneInstance.player = new Player(sceneInstance.scene);
+  sceneInstance.capsule = new Capsule(sceneInstance.scene, physicsWorld);
 }

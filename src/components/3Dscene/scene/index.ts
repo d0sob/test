@@ -4,6 +4,7 @@ import { animate } from "./animate";
 import { setupEventListeners } from "./eventListeners";
 import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
+import { Capsule } from "../Meshes/capsule";
 import { Plane } from "../Meshes/Plane";
 import { FirstPersonControls } from "./Controls";
 import * as Rapier from "@dimforge/rapier3d-compat";
@@ -20,6 +21,7 @@ export class ThreeScene {
   public eventQueue!: Rapier.EventQueue;
   public box!: Box;
   public player!: Player;
+  public capsule!: Capsule;
   public plane!: Plane;
   public controls!: FirstPersonControls;
 

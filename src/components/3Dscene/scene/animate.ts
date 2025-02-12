@@ -18,6 +18,10 @@ export function animate(sceneInstance: ThreeScene): void {
   }
   sceneInstance.player.update(deltaTime);
 
+  if (sceneInstance.capsule) {
+    sceneInstance.capsule.update();
+  }
+
   if (sceneInstance.controls) {
     sceneInstance.controls.update(deltaTime);
   }

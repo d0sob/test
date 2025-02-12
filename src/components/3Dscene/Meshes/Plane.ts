@@ -9,7 +9,7 @@ export class Plane {
   constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
     // Create the visual mesh
     const geometry = new THREE.PlaneGeometry();
-    const material = new THREE.MeshBasicMaterial({
+    const material = new THREE.MeshStandardMaterial({
       color: 0xffff00,
       side: THREE.DoubleSide,
     });
