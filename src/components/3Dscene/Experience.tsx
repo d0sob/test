@@ -1,6 +1,6 @@
 // src/components/ThreeJSScene.tsx
 import React, { useEffect, useRef } from "react";
-import { ThreeScene } from "./scene/ThreeScene";
+import { ThreeScene } from "./scene/index";
 
 const Experience: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -9,7 +9,6 @@ const Experience: React.FC = () => {
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      // Use the singleton getInstance method to create/retrieve the instance
       sceneInstance.current = ThreeScene.getInstance(container);
     }
 
