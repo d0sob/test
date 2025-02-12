@@ -1,4 +1,3 @@
-// src/components/Experience.tsx
 import React, { useEffect, useRef } from "react";
 import { ThreeScene } from "./scene/index";
 
@@ -7,15 +6,20 @@ const Experience: React.FC = () => {
   const sceneInstance = useRef<ThreeScene | null>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      sceneInstance.current = ThreeScene.getInstance(container);
-    }
+    const initializeScene = async () => {
+      const container = containerRef.current;
+      if (container) {
+        // Await the async initialization of ThreeScene
+        sceneInstance.current = await ThreeScene.getInstance(container);
+      }
+    };
+
+    initializeScene(); // Call the async function
 
     return () => {
       sceneInstance.current?.dispose();
     };
-  }, []);
+  }, []); // Empty dependency array to run once on mount
 
   return <div ref={containerRef} style={{ width: "100vw", height: "100vh" }} />;
 };

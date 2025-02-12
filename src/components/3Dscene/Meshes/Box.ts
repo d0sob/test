@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import * as Rapier from "@dimforge/rapier3d";
+import * as Rapier from "@dimforge/rapier3d-compat";
 
 export class Box {
   private mesh: THREE.Mesh;

@@ -1,4 +1,3 @@
-// src/components/3Dscene/scene/index.ts
 import * as THREE from "three";
 import { initScene } from "./initScene";
 import { animate } from "./animate";
@@ -7,7 +6,7 @@ import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
 import { FirstPersonControls } from "./Controls";
-import * as Rapier from "@dimforge/rapier3d";
+import * as Rapier from "@dimforge/rapier3d-compat";
 
 export class ThreeScene {
   private static instance: ThreeScene;
@@ -26,16 +25,18 @@ export class ThreeScene {
 
   private constructor(public container: HTMLDivElement) {}
 
-  public static getInstance(container: HTMLDivElement): ThreeScene {
+  public static async getInstance(
+    container: HTMLDivElement
+  ): Promise<ThreeScene> {
     if (!ThreeScene.instance) {
       ThreeScene.instance = new ThreeScene(container);
-      ThreeScene.instance.init();
+      await ThreeScene.instance.init(); // Ensure `init()` is awaited
     }
     return ThreeScene.instance;
   }
 
-  private init(): void {
-    initScene(this);
+  private async init(): Promise<void> {
+    await initScene(this); // Wait for the async `initScene` to complete
     setupEventListeners(this);
     this.animate();
   }

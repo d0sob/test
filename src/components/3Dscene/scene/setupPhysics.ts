@@ -1,8 +1,8 @@
-// src/components/3Dscene/scene/setupPhysics.ts
-import * as Rapier from "@dimforge/rapier3d";
+import * as Rapier from "@dimforge/rapier3d-compat";
 import * as THREE from "three";
 
-export function setupPhysics(): { physicsWorld: Rapier.World } {
+export async function setupPhysics(): Promise<{ physicsWorld: Rapier.World }> {
+  await Rapier.init();
   const gravity = new THREE.Vector3(0, -9.8, 0);
   const physicsWorld = new Rapier.World(gravity);
 
