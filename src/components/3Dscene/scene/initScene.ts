@@ -26,7 +26,7 @@ export async function initScene(sceneInstance: ThreeScene) {
 
   new Skybox(sceneInstance.scene);
 
-  const ambientLight = new THREE.AmbientLight(0x404040, 1); // color, intensity
+  const ambientLight = new THREE.AmbientLight(0x404040, 19); // color, intensity
   sceneInstance.scene.add(ambientLight);
   const light = new THREE.PointLight(0xff0000, 10, 100);
   light.position.set(50, 50, 50);
@@ -49,6 +49,6 @@ export async function initScene(sceneInstance: ThreeScene) {
     sceneInstance.scene,
     sceneInstance.physicsWorld
   );
-  sceneInstance.player = new Player(sceneInstance.scene);
+  sceneInstance.player = new Player(sceneInstance.scene,physicsWorld, sceneInstance.camera, sceneInstance.renderer.domElement);
   sceneInstance.capsule = new Capsule(sceneInstance.scene, physicsWorld);
 }

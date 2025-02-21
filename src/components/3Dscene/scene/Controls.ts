@@ -1,5 +1,7 @@
+
 import { PointerLockControls as OriginalPointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import * as THREE from "three";
+import * as Rapier from "@dimforge/rapier3d-compat";
 
 export class FirstPersonControls extends OriginalPointerLockControls {
   private velocity = new THREE.Vector3();
@@ -10,13 +12,14 @@ export class FirstPersonControls extends OriginalPointerLockControls {
   private canJump = false;
 
   private boostMultiplier = 1.0;
-  private readonly speed = 5;
+  private readonly speed = 200;
   private readonly jumpStrength = 5;
   private readonly gravity = 9.8;
 
   constructor(
     private camera: THREE.PerspectiveCamera,
-    domElement: HTMLElement
+    domElement: HTMLElement,
+    private physicsBody: Rapier.RigidBody // Pass physics body to control it
   ) {
     super(camera, domElement);
     domElement.addEventListener("click", () => this.lock());
@@ -75,6 +78,8 @@ export class FirstPersonControls extends OriginalPointerLockControls {
   };
 
   public update(deltaTime: number): void {
+       if (!this.physicsBody) return;
+
     const moveDirection = new THREE.Vector3();
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -97,19 +102,22 @@ export class FirstPersonControls extends OriginalPointerLockControls {
 
     const speed = this.speed * this.boostMultiplier;
 
-    // Apply velocity
-    this.velocity.x = moveDirection.x * speed;
-    this.velocity.z = moveDirection.z * speed;
-    this.velocity.y -= this.gravity * deltaTime; // Apply gravity
+    // Apply movement velocity to physics body
+    const currentVelocity = this.physicsBody.linvel();
+    this.physicsBody.setLinvel(
+      new Rapier.Vector3(moveDirection.x * speed, currentVelocity.y, moveDirection.z * speed),
+      true
+    );
 
-    // Move camera
-    this.camera.position.addScaledVector(this.velocity, deltaTime);
+    console.log("MoveDirection:", moveDirection); // Debug movement
+    console.log("Velocity Set:", this.physicsBody.linvel()); // Check if physics body is updating
 
     // Handle landing
     if (this.camera.position.y < 1.0) {
       this.velocity.y = 0;
       this.camera.position.y = 1.0;
       this.canJump = true;
+      console.log("Landed, can jump now!"); // Debug jump logic
     }
   }
 }

@@ -1,4 +1,5 @@
 // src/components/3Dscene/scene/animate.ts
+
 import * as THREE from "three";
 import { ThreeScene } from "./index";
 
@@ -13,18 +14,15 @@ export function animate(sceneInstance: ThreeScene): void {
   if (sceneInstance.physicsWorld) {
     sceneInstance.physicsWorld.step();
   }
-  if (sceneInstance.box) {
-    sceneInstance.box.update();
-  }
-  sceneInstance.player.update(deltaTime);
 
-  if (sceneInstance.capsule) {
-    sceneInstance.capsule.update();
-  }
+  const updatables = [
+    sceneInstance.box,
+    sceneInstance.player,
+    sceneInstance.capsule,
+    sceneInstance.controls,
+  ];
 
-  if (sceneInstance.controls) {
-    sceneInstance.controls.update(deltaTime);
-  }
+  updatables.forEach((obj) => obj?.update?.(deltaTime));
 
   sceneInstance.renderer.render(sceneInstance.scene, sceneInstance.camera);
 }
