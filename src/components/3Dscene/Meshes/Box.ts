@@ -1,39 +1,68 @@
 import * as THREE from "three";
 import * as Rapier from "@dimforge/rapier3d-compat";
 
-export class Box {
-  private mesh: THREE.Mesh;
-  private physicsBody: Rapier.RigidBody;
+export class InstancedBoxes {
+  private mesh: THREE.InstancedMesh;
+  private physicsBodies: Rapier.RigidBody[] = [];
 
-  constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
-    // Create a Three.js box mesh
+  constructor(scene: THREE.Scene, physicsWorld: Rapier.World, count = 10) {
     const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
-      wireframe: false,
-    });
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.set(0, 5, 0);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+    // Create an InstancedMesh with `count` instances
+    this.mesh = new THREE.InstancedMesh(geometry, material, count);
     scene.add(this.mesh);
 
-    // Create the physics body
-    const rigidBodyDesc = Rapier.RigidBodyDesc.dynamic().setTranslation(
-      this.mesh.position.x,
-      this.mesh.position.y,
-      this.mesh.position.z
-    );
-    this.physicsBody = physicsWorld.createRigidBody(rigidBodyDesc);
-
-    // Create a collider for the box
     const colSize = 0.5;
-    const colliderDesc = Rapier.ColliderDesc.cuboid(colSize, colSize, colSize);
-    physicsWorld.createCollider(colliderDesc, this.physicsBody);
+
+    for (let i = 0; i < count; i++) {
+      // Randomize initial positions
+      const x = Math.random() * 10 - 5;
+      const y = Math.random() * 5 + 3;
+      const z = Math.random() * 10 - 5;
+
+      // Create a physics body
+      const rigidBodyDesc = Rapier.RigidBodyDesc.dynamic().setTranslation(
+        x,
+        y,
+        z
+      );
+      const rigidBody = physicsWorld.createRigidBody(rigidBodyDesc);
+      this.physicsBodies.push(rigidBody);
+
+      // Create a collider for the box
+      const colliderDesc = Rapier.ColliderDesc.cuboid(
+        colSize,
+        colSize,
+        colSize
+      );
+      physicsWorld.createCollider(colliderDesc, rigidBody);
+
+      // Set initial transformation for the instance
+      const matrix = new THREE.Matrix4();
+      matrix.setPosition(x, y, z);
+      this.mesh.setMatrixAt(i, matrix);
+    }
+
+    this.mesh.instanceMatrix.needsUpdate = true;
   }
 
   public update(): void {
-    const position = this.physicsBody.translation();
-    this.mesh.position.set(position.x, position.y, position.z);
-    const rotation = this.physicsBody.rotation();
-    this.mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+    const matrix = new THREE.Matrix4();
+    const position = new THREE.Vector3();
+    const quaternion = new THREE.Quaternion();
+
+    this.physicsBodies.forEach((body, i) => {
+      const pos = body.translation();
+      const rot = body.rotation();
+
+      position.set(pos.x, pos.y, pos.z);
+      quaternion.set(rot.x, rot.y, rot.z, rot.w);
+
+      matrix.compose(position, quaternion, new THREE.Vector3(1, 1, 1));
+      this.mesh.setMatrixAt(i, matrix);
+    });
+
+    this.mesh.instanceMatrix.needsUpdate = true;
   }
 }

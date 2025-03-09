@@ -7,16 +7,14 @@ export class Plane {
   private physicsBody: Rapier.RigidBody;
 
   constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
-    const size = 10;
-    const geometry = new THREE.PlaneGeometry(size, size, size);
+    this.size = 100;
+    const geometry = new THREE.PlaneGeometry(this.size, this.size);
     const material = new THREE.MeshStandardMaterial({
       color: 0xffff00,
       side: THREE.DoubleSide,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.rotation.x = Math.PI / 2;
-    this.size = 10;
-    this.mesh.scale.set(this.size, this.size, this.size);
     scene.add(this.mesh);
 
     const rigidBodyDesc = Rapier.RigidBodyDesc.fixed().setTranslation(0, 0, 0);

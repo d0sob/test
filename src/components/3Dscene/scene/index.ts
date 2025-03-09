@@ -2,11 +2,11 @@ import * as THREE from "three";
 import { initScene } from "./initScene";
 import { animate } from "./animate";
 import { setupEventListeners } from "./eventListeners";
-import { Box } from "../Meshes/Box";
+import { InstancedBoxes } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Capsule } from "../Meshes/capsule";
 import { Plane } from "../Meshes/Plane";
-import { FirstPersonControls } from "./Controls";
+import { ThirdPersonControls } from "./Controls";
 import * as Rapier from "@dimforge/rapier3d-compat";
 
 export class ThreeScene {
@@ -19,11 +19,11 @@ export class ThreeScene {
   // Add properties
   public physicsWorld!: Rapier.World;
   public eventQueue!: Rapier.EventQueue;
-  public box!: Box;
+  public box!: InstancedBoxes;
   public player!: Player;
   public capsule!: Capsule;
   public plane!: Plane;
-  public controls!: FirstPersonControls;
+  public controls!: ThirdPersonControls;
 
   private constructor(public container: HTMLDivElement) {}
 

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Skybox } from "./Skybox";
-import { Box } from "../Meshes/Box";
+import { InstancedBoxes } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
 import { Capsule } from "../Meshes/capsule";
@@ -37,7 +37,7 @@ export async function initScene(sceneInstance: ThreeScene) {
   sceneInstance.eventQueue = new Rapier.EventQueue(true);
 
   // Create the Box object with both the scene and physics world passed in
-  sceneInstance.box = new Box(sceneInstance.scene, physicsWorld);
+  sceneInstance.box = new InstancedBoxes(sceneInstance.scene, physicsWorld, 10);
   sceneInstance.physicsWorld = physicsWorld;
   sceneInstance.plane = new Plane(
     sceneInstance.scene,

@@ -1,33 +1,52 @@
-import { PointerLockControls as OriginalPointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import * as THREE from "three";
 import * as Rapier from "@dimforge/rapier3d-compat";
 
-export class FirstPersonControls extends OriginalPointerLockControls {
-  private velocity = new THREE.Vector3();
+export class ThirdPersonControls {
+  private sensitivity = 0.002;
+  private angleX = 0;
+  private angleY = 0;
+  private readonly minY = -Math.PI / 4;
+  private readonly maxY = Math.PI / 4;
+  private isPointerLocked = false;
+
   private isMovingForward = false;
   private isMovingBackward = false;
   private isMovingLeft = false;
   private isMovingRight = false;
-  private canJump = false;
-
   private boostMultiplier = 1.0;
-  private readonly speed = 200;
-  private readonly jumpStrength = 5;
+  private readonly speed = 10;
+  private readonly jumpStrength = 10;
+  private canJump = false;
 
   constructor(
     private camera: THREE.PerspectiveCamera,
-    domElement: HTMLElement,
-    private physicsBody: Rapier.RigidBody // Pass physics body to control it
+    private player: THREE.Object3D,
+    private physicsBody: Rapier.RigidBody,
+    private domElement: HTMLElement
   ) {
-    super(camera, domElement);
-    domElement.addEventListener("click", () => this.lock());
-    this.addEventListeners();
-  }
-
-  private addEventListeners(): void {
+    // Listen for pointer lock activation
+    domElement.addEventListener("click", this.requestPointerLock);
+    document.addEventListener("pointerlockchange", this.onPointerLockChange);
+    document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("keydown", this.onKeyDown);
     document.addEventListener("keyup", this.onKeyUp);
   }
+
+  private requestPointerLock = (): void => {
+    this.domElement.requestPointerLock();
+  };
+
+  private onPointerLockChange = (): void => {
+    this.isPointerLocked = document.pointerLockElement === this.domElement;
+  };
+
+  private onMouseMove = (event: MouseEvent): void => {
+    if (!this.isPointerLocked) return; // Ignore if not locked
+
+    this.angleX -= event.movementX * this.sensitivity;
+    this.angleY += event.movementY * this.sensitivity;
+    this.angleY = Math.max(this.minY, Math.min(this.maxY, this.angleY));
+  };
 
   private onKeyDown = (event: KeyboardEvent): void => {
     switch (event.code) {
@@ -45,7 +64,15 @@ export class FirstPersonControls extends OriginalPointerLockControls {
         break;
       case "Space":
         if (this.canJump) {
-          this.velocity.y = this.jumpStrength;
+          const currentVelocity = this.physicsBody.linvel();
+          this.physicsBody.setLinvel(
+            new Rapier.Vector3(
+              currentVelocity.x,
+              this.jumpStrength,
+              currentVelocity.z
+            ),
+            true
+          );
           this.canJump = false;
         }
         break;
@@ -76,32 +103,27 @@ export class FirstPersonControls extends OriginalPointerLockControls {
   };
 
   public update(): void {
-    if (!this.physicsBody) return;
-
     const moveDirection = new THREE.Vector3();
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
 
-    // Get camera's forward direction (ignoring Y to stay on ground)
+    // forward.set(Math.sin(this.angleX), 0, -Math.cos(this.angleX)).normalize();
     this.camera.getWorldDirection(forward);
-    forward.y = 0;
+    forward.y = 0; // Ignore vertical component
     forward.normalize();
 
-    // Get camera's right direction (perpendicular to forward)
     right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
 
-    // Calculate movement direction
     if (this.isMovingForward) moveDirection.add(forward);
     if (this.isMovingBackward) moveDirection.sub(forward);
     if (this.isMovingRight) moveDirection.add(right);
     if (this.isMovingLeft) moveDirection.sub(right);
 
-    moveDirection.normalize(); // Prevent faster diagonal movement
+    moveDirection.normalize();
 
     const speed = this.speed * this.boostMultiplier;
-
-    // Apply movement velocity to physics body
     const currentVelocity = this.physicsBody.linvel();
+
     this.physicsBody.setLinvel(
       new Rapier.Vector3(
         moveDirection.x * speed,
@@ -111,15 +133,35 @@ export class FirstPersonControls extends OriginalPointerLockControls {
       true
     );
 
-    console.log("MoveDirection:", moveDirection); // Debug movement
-    console.log("Velocity Set:", this.physicsBody.linvel()); // Check if physics body is updating
+    const radius = 3;
+    const offsetX = Math.sin(this.angleX) * Math.cos(this.angleY) * radius;
+    const offsetZ = Math.cos(this.angleX) * Math.cos(this.angleY) * radius;
+    const offsetY = Math.sin(this.angleY) * radius * 0.5;
 
-    // Handle landing
-    if (this.camera.position.y < 1.0) {
-      this.velocity.y = 0;
-      this.camera.position.y = 1.0;
+    const playerPosition = this.player.position;
+    this.camera.position.set(
+      playerPosition.x + offsetX,
+      playerPosition.y + 1.5 + offsetY,
+      playerPosition.z + offsetZ
+    );
+
+    this.camera.lookAt(
+      playerPosition.x,
+      playerPosition.y + 1.5,
+      playerPosition.z
+    );
+
+    if (moveDirection.length() > 0) {
+      const targetRotation = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1), // Default forward vector
+        moveDirection.clone().normalize() // New movement direction
+      );
+
+      this.player.quaternion.slerp(targetRotation, 0.1); // Adjust 0.1 for smoothness
+    }
+
+    if (this.physicsBody.translation().y <= 1.01) {
       this.canJump = true;
-      console.log("Landed, can jump now!"); // Debug jump logic
     }
   }
 }
