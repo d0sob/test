@@ -1,4 +1,3 @@
-
 import { PointerLockControls as OriginalPointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import * as THREE from "three";
 import * as Rapier from "@dimforge/rapier3d-compat";
@@ -14,7 +13,6 @@ export class FirstPersonControls extends OriginalPointerLockControls {
   private boostMultiplier = 1.0;
   private readonly speed = 200;
   private readonly jumpStrength = 5;
-  private readonly gravity = 9.8;
 
   constructor(
     private camera: THREE.PerspectiveCamera,
@@ -77,8 +75,8 @@ export class FirstPersonControls extends OriginalPointerLockControls {
     }
   };
 
-  public update(deltaTime: number): void {
-       if (!this.physicsBody) return;
+  public update(): void {
+    if (!this.physicsBody) return;
 
     const moveDirection = new THREE.Vector3();
     const forward = new THREE.Vector3();
@@ -105,7 +103,11 @@ export class FirstPersonControls extends OriginalPointerLockControls {
     // Apply movement velocity to physics body
     const currentVelocity = this.physicsBody.linvel();
     this.physicsBody.setLinvel(
-      new Rapier.Vector3(moveDirection.x * speed, currentVelocity.y, moveDirection.z * speed),
+      new Rapier.Vector3(
+        moveDirection.x * speed,
+        currentVelocity.y,
+        moveDirection.z * speed
+      ),
       true
     );
 

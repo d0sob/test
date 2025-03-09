@@ -7,18 +7,23 @@ export class Player {
   private mixer!: THREE.AnimationMixer;
   private model!: THREE.Object3D;
   private animations: { [key: string]: THREE.AnimationClip } = {};
-  private physicsBody: Rapier.RigidBody;
-  private controls: FirstPersonControls;
+  private physicsBody!: Rapier.RigidBody;
+  private controls!: FirstPersonControls;
   private loaded = true;
 
-  constructor(scene: THREE.Scene, physicsWorld: Rapier.World, camera: THREE.PerspectiveCamera,domElement: HTMLElement) {
+  constructor(
+    scene: THREE.Scene,
+    physicsWorld: Rapier.World,
+    camera: THREE.PerspectiveCamera,
+    domElement: HTMLElement
+  ) {
     const loader = new GLTFLoader();
 
     loader.load(
       "./assets/models/stickman.glb",
       (gltf) => {
         this.model = gltf.scene;
-        this.model.position.set(2,2,2)
+        this.model.position.set(2, 2, 2);
         scene.add(this.model);
         // Set up the mixer for animations
         this.mixer = new THREE.AnimationMixer(this.model);
@@ -29,28 +34,28 @@ export class Player {
           this.mixer.clipAction(clip).play();
         });
 
+        const rigidBodyDesc = Rapier.RigidBodyDesc.dynamic().setTranslation(
+          this.model.position.x,
+          this.model.position.y,
+          this.model.position.z
+        );
+        this.physicsBody = physicsWorld.createRigidBody(rigidBodyDesc);
 
-    const rigidBodyDesc = Rapier.RigidBodyDesc.dynamic().setTranslation(
-      this.model.position.x,
-      this.model.position.y,
-      this.model.position.z
-    );
-    this.physicsBody = physicsWorld.createRigidBody(rigidBodyDesc);
+        // Create a collider for the box
+        const colliderDesc = Rapier.ColliderDesc.capsule(0.2, 0.3);
+        physicsWorld.createCollider(colliderDesc, this.physicsBody);
 
-    // Create a collider for the box
-    const colSize = 0.5;
-    const colliderDesc = Rapier.ColliderDesc.capsule(0.2,0.3)
-    physicsWorld.createCollider(colliderDesc, this.physicsBody);
+        this.controls = new FirstPersonControls(
+          camera,
+          domElement,
+          this.physicsBody
+        );
 
-    this.controls = new FirstPersonControls(camera,domElement);
+        camera.position.set(0, 1.6, 0);
+        this.model.add(camera);
+        this.loaded = true;
 
-    camera.position.set(0,1.6,0);
-    this.model.add(camera);
-    this.loaded = true
-
-    console.log("Player loaded succesfully!")
-
-    
+        console.log("Player loaded succesfully!");
       },
       undefined,
       (err) => {
@@ -66,7 +71,7 @@ export class Player {
 
     if (!this.loaded || !this.physicsBody) return;
 
-  this.controls.update(deltaTime);
+    this.controls.update();
 
     // Simply update the mesh based on the physics simulation.
     const position = this.physicsBody.translation();

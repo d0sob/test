@@ -4,7 +4,6 @@ import { Box } from "../Meshes/Box";
 import { Player } from "../Meshes/Player";
 import { Plane } from "../Meshes/Plane";
 import { Capsule } from "../Meshes/capsule";
-import { FirstPersonControls } from "./Controls";
 import { ThreeScene } from "./index";
 import { setupPhysics } from "./setupPhysics";
 import * as Rapier from "@dimforge/rapier3d-compat";
@@ -32,11 +31,6 @@ export async function initScene(sceneInstance: ThreeScene) {
   light.position.set(50, 50, 50);
   sceneInstance.scene.add(light);
 
-  sceneInstance.controls = new FirstPersonControls(
-    sceneInstance.camera,
-    sceneInstance.renderer.domElement
-  );
-
   // Wait for the physics world to be initialized
   const { physicsWorld } = await setupPhysics(); // `await` ensures physics is initialized before proceeding
 
@@ -49,6 +43,11 @@ export async function initScene(sceneInstance: ThreeScene) {
     sceneInstance.scene,
     sceneInstance.physicsWorld
   );
-  sceneInstance.player = new Player(sceneInstance.scene,physicsWorld, sceneInstance.camera, sceneInstance.renderer.domElement);
+  sceneInstance.player = new Player(
+    sceneInstance.scene,
+    physicsWorld,
+    sceneInstance.camera,
+    sceneInstance.renderer.domElement
+  );
   sceneInstance.capsule = new Capsule(sceneInstance.scene, physicsWorld);
 }

@@ -7,8 +7,8 @@ export class Plane {
   private physicsBody: Rapier.RigidBody;
 
   constructor(scene: THREE.Scene, physicsWorld: Rapier.World) {
-    // Create the visual mesh
-    const geometry = new THREE.PlaneGeometry();
+    const size = 10;
+    const geometry = new THREE.PlaneGeometry(size, size, size);
     const material = new THREE.MeshStandardMaterial({
       color: 0xffff00,
       side: THREE.DoubleSide,

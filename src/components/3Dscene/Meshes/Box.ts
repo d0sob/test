@@ -10,7 +10,7 @@ export class Box {
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshBasicMaterial({
       color: 0x00ff00,
-      wireframe: true,
+      wireframe: false,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.set(0, 5, 0);
@@ -31,7 +31,6 @@ export class Box {
   }
 
   public update(): void {
-    // Simply update the mesh based on the physics simulation.
     const position = this.physicsBody.translation();
     this.mesh.position.set(position.x, position.y, position.z);
     const rotation = this.physicsBody.rotation();

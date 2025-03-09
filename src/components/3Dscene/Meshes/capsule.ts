@@ -28,7 +28,6 @@ export class Capsule {
   }
 
   public update(): void {
-    // Simply update the mesh based on the physics simulation.
     const position = this.physicsBody.translation();
     this.mesh.position.set(position.x, position.y, position.z);
     const rotation = this.physicsBody.rotation();
