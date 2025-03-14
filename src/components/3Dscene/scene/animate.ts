@@ -24,5 +24,5 @@ export function animate(sceneInstance: ThreeScene): void {
 
   updatables.forEach((obj) => obj?.update?.(deltaTime));
 
-  sceneInstance.renderer.render(sceneInstance.scene, sceneInstance.camera);
+  sceneInstance.composer.render();
 }

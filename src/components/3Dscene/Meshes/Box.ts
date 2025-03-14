@@ -4,10 +4,16 @@ import * as Rapier from "@dimforge/rapier3d-compat";
 export class InstancedBoxes {
   private mesh: THREE.InstancedMesh;
   private physicsBodies: Rapier.RigidBody[] = [];
+  private count: number; // Store count properly
 
   constructor(scene: THREE.Scene, physicsWorld: Rapier.World, count = 10) {
+    this.count = count; // Store the count value
     const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshToonMaterial({
+      color: 0x00ff00,
+      emissiveIntensity: 1,
+      emissive: 0x00ff00,
+    });
 
     // Create an InstancedMesh with `count` instances
     this.mesh = new THREE.InstancedMesh(geometry, material, count);
@@ -52,7 +58,8 @@ export class InstancedBoxes {
     const position = new THREE.Vector3();
     const quaternion = new THREE.Quaternion();
 
-    this.physicsBodies.forEach((body, i) => {
+    for (let i = 0; i < this.count; i++) {
+      const body = this.physicsBodies[i];
       const pos = body.translation();
       const rot = body.rotation();
 
@@ -61,7 +68,7 @@ export class InstancedBoxes {
 
       matrix.compose(position, quaternion, new THREE.Vector3(1, 1, 1));
       this.mesh.setMatrixAt(i, matrix);
-    });
+    }
 
     this.mesh.instanceMatrix.needsUpdate = true;
   }

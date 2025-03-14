@@ -8,6 +8,7 @@ import { Capsule } from "../Meshes/capsule";
 import { Plane } from "../Meshes/Plane";
 import { ThirdPersonControls } from "./Controls";
 import * as Rapier from "@dimforge/rapier3d-compat";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 
 export class ThreeScene {
   private static instance: ThreeScene;
@@ -15,6 +16,7 @@ export class ThreeScene {
   public camera!: THREE.PerspectiveCamera;
   public renderer!: THREE.WebGLRenderer;
   public animationFrameId: number | null = null;
+  public composer!: EffectComposer;
 
   // Add properties
   public physicsWorld!: Rapier.World;
